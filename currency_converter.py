@@ -18,18 +18,21 @@ class Currency_converter_class():
     def string_parser(self, input_string):
         parser_string = sub(r'\s+|\t', ' ', input_string.lower())
         string_array = parser_string.split(' ')
-        if len(string_array) < 4:
+        len_string_array = len(string_array)
+        if len_string_array < 4:
             return -1
-        if string_array[2] != '->':
+        if string_array[-2] != '->':
             return -2
-        try:
-            input_value = int(string_array[0])
-        except Exception as e:
+        input_values = [0] * (len_string_array - 3)
+        for i in range(0, len_string_array - 3):
             try:
-                input_value = float(sub(r',', '.', string_array[0]))
+                input_values[i] = int(string_array[i])
             except Exception as e:
-                return -3
-        return (input_value, string_array[1], string_array[3])
+                try:
+                    input_values[i] = float(sub(r',', '.', string_array[i]))
+                except Exception as e:
+                    return -3
+        return (input_values, string_array[-3], string_array[-1])
 
     def currency_dict_fill(self, date_string):
         self.Currency_dict.setdefault('rub', '1')
@@ -48,32 +51,44 @@ class Currency_converter_class():
         currency_value = float(sub(r',', '.', currency_value_raw))
         return currency_value
 
+    def input_array_number(self, input_values, currency_from_value, currency_to_value):
+        len_input_values = len(input_values)
+        output_values = [0] * len_input_values
+        input_values_round = [0] * len_input_values
+        for i in range(0, len_input_values):
+            output_values[i] = round((input_values[i] * currency_from_value / currency_to_value), 3)
+            input_values_round[i] = round(input_values[i], 3)
+        return (input_values_round, output_values)
+
     def main(self):
         flag = True
         while flag:
             print('\n Please, inter the a line with the name of two currencies in the format:' + \
-                '\n\t number (int or float) currency_from -> currency_to')
+                '\n\t "numbers (int or float) currency_from -> currency_to"')
             input_string = input(' > ')
+            print('')
             result_parser = self.string_parser(input_string)
             if   result_parser == -1:
-                print('\n\t ERROR!!! You have entered too few arguments!')
+                print('\t ERROR!!! You have entered too few arguments!')
             elif result_parser == -2:
-                print('\n\t ERROR!!! Incorrect format of the entered string!')
+                print('\t ERROR!!! Incorrect format of the entered string!')
             elif result_parser == -3:
-                print('\n\t ERROR!!! You can only translate integer values!')
+                print('\t ERROR!!! You can only translate integer or float values!')
             else:
                 date_string = datetime.today().strftime("%d/%m/%Y")
                 if not self.Currency_dict:
                     self.currency_dict_fill(date_string)
-                currrency_from_value = self.currency_get(result_parser[1])
-                currrency_to_value = self.currency_get(result_parser[2])
-                if (currrency_from_value < 0) or (currrency_to_value < 0):
-                    print('\n\t ERROR!!! There is no such currency in the system!' + \
-                        '\n\t\t Please make sure that you have entered the correct currency name!')
+                currency_from_value = self.currency_get(result_parser[1])
+                currency_to_value = self.currency_get(result_parser[2])
+                if (currency_from_value < 0) or (currency_to_value < 0):
+                    print('\t ERROR!!! There is no such currency in the system!' + \
+                        '\t\t Please make sure that you have entered the correct currency name!')
                 else:
-                    result_value = round(result_parser[0] * currrency_from_value / currrency_to_value, 3)
-                    input_value  = round(result_parser[0], 3)
-                    print(f'\n\t Answer: {input_value} {result_parser[1].upper()} = {result_value} {result_parser[2].upper()}')
+                    result_values = self.input_array_number(result_parser[0], currency_from_value, currency_to_value)
+                    currency_from_name = result_parser[1].upper()
+                    currency_to_name   = result_parser[2].upper()
+                    for i in range(0, len(result_values[0])):
+                        print(f'\t {result_values[0][i]} {currency_from_name} = {result_values[1][i]} {currency_to_name}')
             continuos_question = input('\n Do you want to repeat (Y) or exit the program (ANY OTHER)? > ')
             if not continuos_question.lower().startswith('y'): 
                 flag = False
