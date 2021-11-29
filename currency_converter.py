@@ -1,6 +1,10 @@
+#!/bin/python
+
 import requests
 import lxml
 
+from ast import literal_eval as lit_ev
+from pymemcache.client.base import Client
 from bs4 import BeautifulSoup as bs
 from re import sub
 from datetime import datetime
@@ -14,7 +18,9 @@ class Currency_converter_class():
 
     URL_CBR = 'https://cbr.ru/scripts/XML_daily.asp?'
 
-    Currency_dict_days = {}
+    TIME_CACHE = 60 * 60
+    CLIENT = Client('localhost:11211')
+
     Currency_dict = {}
 
     def __init__(self):
@@ -55,7 +61,6 @@ class Currency_converter_class():
         soup = bs(request.content, 'lxml')
         for tag in soup.findAll('valute'):
             self.Currency_dict.update({tag.charcode.string.lower():tag.value.string})
-        self.Currency_dict_days.setdefault(date_string, self.Currency_dict)
         return
 
     def currency_get(self, currency):
@@ -77,8 +82,12 @@ class Currency_converter_class():
             input_values_round[i] = round(input_values[i], 3)
         return (input_values_round, output_values)
 
+    def replace_None(self, input_data):
+        return '{}' if input_data is None else input_data
+
     def main(self):
         flag = True
+        client = self.CLIENT
         while flag:
             print('\n Please, inter the a line with the name of two currencies in the format:' + \
                 '\n\t "date (optional, format: dd.mm.yy) numbers (int or float) currency_from -> currency_to"')
@@ -96,10 +105,10 @@ class Currency_converter_class():
                 print('\t ERROR!!! You can only translate integer or float values or you entered the wrong date format!')
             else:
                 date_string = result_parser[0]
-                if date_string in self.Currency_dict_days.keys():
-                    self.Currency_dict = self.Currency_dict_days[date_string]
-                else:
+                self.Currency_dict = lit_ev(self.replace_None(client.get(date_string)).decode('utf-8'))
+                if not self.Currency_dict:
                     self.currency_dict_fill(date_string)
+                    client.set(date_string, str(self.Currency_dict), expire = self.TIME_CACHE)
                 date_string = datetime.strptime(date_string, '%d/%m/%Y').date().strftime('%d.%m.%y')
                 currency_from_value = self.currency_get(result_parser[2])
                 currency_to_value = self.currency_get(result_parser[3])
@@ -116,6 +125,7 @@ class Currency_converter_class():
             if not continuos_question.lower().startswith('y'): 
                 flag = False
                 print('')
+        client.close()
         return 0
 
 if __name__ == '__main__':
