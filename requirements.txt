@@ -2,4 +2,6 @@ datetime
 requests
 re
 lxml
+pymemcache
+ast
 BeautifulSoup4
