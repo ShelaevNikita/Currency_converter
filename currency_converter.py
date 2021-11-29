@@ -6,6 +6,11 @@ from bs4 import BeautifulSoup as bs
 from re import sub
 from datetime import datetime
 
+Special_symbol_dict = {'₽':'rub', 'A$':'aud', '₼':'azn', '£':'gbp', '֏':'amd', 'Br':'byn', 'лв':'bgn', 'R$':'brl', \
+    'Ft':'huf', 'HK$':'hkd', 'dkr':'dkk', '$':'usd', '€':'eur', '₹':'inr', '₸':'kzt', 'C$':'cad', 'с':'kgs', \
+    'C¥':'cny','L':'mdl', 'nkr':'nok', 'zł':'pln', 'lei':'ron', 'SDR':'xdr', 'S$':'sgd', 'SM':'tjs', '₺':'try', \
+    'T':'tmt', "So'm":'uzs', '₴':'uah', 'Kč':'czk', 'skr':'sek', 'Fr':'chf', 'R':'zar', '₩':'krw', '원':'krw', 'J¥':'jpy'}
+
 class Currency_converter_class():
 
     URL_CBR = 'https://cbr.ru/scripts/XML_daily.asp?'
@@ -44,9 +49,11 @@ class Currency_converter_class():
         return
 
     def currency_get(self, currency):
-        try:
-            currency_value_raw = self.Currency_dict[currency]
-        except Exception as e:
+        if currency in self.Currency_dict.keys():
+            currency_value_raw = self.Currency_dict[currency_raw]
+        elif currency in Special_symbol_dict.keys():
+            currency_value_raw = self.Currency_dict[Special_symbol_dict[currency]]
+        else:
             return -1
         currency_value = float(sub(r',', '.', currency_value_raw))
         return currency_value
