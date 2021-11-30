@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/env python3
 
 import requests
 import lxml
@@ -83,14 +83,14 @@ class Currency_converter_class():
         return (input_values_round, output_values)
 
     def replace_None(self, input_data):
-        return '{}' if input_data is None else input_data
+        return b'{}' if input_data is None else input_data
 
     def main(self):
         flag = True
         client = self.CLIENT
         while flag:
             print('\n Please, inter the a line with the name of two currencies in the format:' + \
-                '\n\t "date (optional, format: dd.mm.yy) numbers (int or float) currency_from -> currency_to"')
+                '\n\t "[Date] Numbers CurrencyFrom -> CurrencyTo"')
             input_string = input(' > ')
             print('')
             result_parser = self.string_parser(input_string)
@@ -120,7 +120,7 @@ class Currency_converter_class():
                     currency_from_name = result_parser[2].upper()
                     currency_to_name   = result_parser[3].upper()
                     for i in range(0, len(result_values[0])):
-                        print(f'\t {date_string}: {result_values[0][i]} {currency_from_name} = {result_values[1][i]} {currency_to_name}')
+                        print(f'\t [{date_string}]: {result_values[0][i]} {currency_from_name} = {result_values[1][i]} {currency_to_name}')
             continuos_question = input('\n Do you want to repeat (Y) or exit the program (ANY OTHER)? > ')
             if not continuos_question.lower().startswith('y'): 
                 flag = False
