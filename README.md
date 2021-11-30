@@ -2,9 +2,8 @@
 # The Currency Converter Service
 
 This is a service for converting one currency into another.   
-It refers for data to the website of [The Central bank of Russia](https://cbr.ru/).
-To convert, the user must enter a string in the following format:
-`[Date] Numbers CurrencyFrom -> CurrencyTo`
+It refers for data to the website of [The Central bank of Russia](https://cbr.ru/).   
+To convert, the user must enter a string in the following format: `[Date] Numbers CurrencyFrom -> CurrencyTo`   
 Where: 
  - **Date** - The date on which the service needs to look at the exchange rate. Optional. If the user has not entered a date, the current date of the operating system will be used. Format: **dd.mm.yy**, **>= 01.01.2000** and **<= TODAY**;   
  - **Numbers** - One or more currency values to convert, separated by spaces (integer or float);   
@@ -13,7 +12,7 @@ Where:
 
 For **CurrencyFrom** and **CcurrencyTo**, the use of a 3-letter ABBreviation is implied, but it is also possible to use special characters (for example,  **$**).
 
-### Running the script using the command line and ***Python***
+### Running the service using the command line and ***Python***
 
 - Example of currency conversion **without** entering a date (the system date is used):
 
@@ -49,7 +48,7 @@ Please, inter the a line with the name of two currencies in the format:
     [25.10.21]: 50.5 $ = 43.377 €
 ```
 
-### Running a script in a Docker-container
+### Running the service in a Docker-container
 
 To get a working service, you need to run the following command:
 ```sudo docker build [-t <image_name>] .```   
