@@ -27,7 +27,7 @@ class Currency_converter_class():
         self.main()
 
     def string_parser(self, input_string):
-        parser_string = sub(r'\s+|\t', ' ', input_string.lower())
+        parser_string = sub(r'\s+|\t', ' ', input_string.strip().lower())
         string_array = parser_string.split(' ')
         len_string_array = len(string_array)
         if len_string_array < 4:
