@@ -11,7 +11,7 @@ from datetime import datetime
 
 Special_symbol_dict = {'₽':'rub', 'A$':'aud', '₼':'azn', '£':'gbp', '֏':'amd', 'Br':'byn', 'лв':'bgn', 'R$':'brl', \
     'Ft':'huf', 'HK$':'hkd', 'dkr':'dkk', '$':'usd', '€':'eur', '₹':'inr', '₸':'kzt', 'C$':'cad', 'с':'kgs', \
-    'C¥':'cny','L':'mdl', 'nkr':'nok', 'zł':'pln', 'lei':'ron', 'SDR':'xdr', 'S$':'sgd', 'SM':'tjs', '₺':'try', \
+    'C¥':'cny', 'L':'mdl', 'nkr':'nok', 'zł':'pln', 'lei':'ron', 'SDR':'xdr', 'S$':'sgd', 'SM':'tjs', '₺':'try', \
     'T':'tmt', "So'm":'uzs', '₴':'uah', 'Kč':'czk', 'skr':'sek', 'Fr':'chf', 'R':'zar', '₩':'krw', '원':'krw', 'J¥':'jpy'}
 
 class Currency_converter_class():
@@ -24,10 +24,10 @@ class Currency_converter_class():
     Currency_dict = {}
 
     def __init__(self):
-        self.main()
+        pass
 
     def string_parser(self, input_string):
-        parser_string = sub(r'\s+|\t', ' ', input_string.lower())
+        parser_string = sub(r'\s+|\t', ' ', input_string.strip().lower())
         string_array = parser_string.split(' ')
         len_string_array = len(string_array)
         if len_string_array < 4:
@@ -42,16 +42,16 @@ class Currency_converter_class():
                 return -3
             date_flag += 1
             date_string = input_date.date().strftime('%d/%m/%Y')
-        except Exception as e:
+        except ValueError as e:
             date_string = date_today.strftime('%d/%m/%Y')
         input_values = [0] * (len_string_array - 3 - date_flag)
         for i in range(0, len_string_array - 3 - date_flag):
             try:
                 input_values[i] = int(string_array[i + date_flag])
-            except Exception as e:
+            except ValueError as e:
                 try:
                     input_values[i] = float(sub(r',', '.', string_array[i + date_flag]))
-                except Exception as e:
+                except ValueError as e:
                     return -4
         return (date_string, input_values, string_array[-3], string_array[-1])
 
@@ -85,36 +85,51 @@ class Currency_converter_class():
     def replace_None(self, input_data):
         return b'{}' if input_data is None else input_data
 
+    def print_message(self, message_int):
+        if   message_int == 0:
+            print('\n Please, inter the a line with the name of two currencies in the format:' + \
+                '\n\t "[Date] Numbers CurrencyFrom -> CurrencyTo"')
+        elif message_int == 1: 
+            print('\t ERROR!!! There is no such currency in the system!' + \
+                '\n\t\t Please make sure that you have entered the correct currency name!')
+        elif message_int == -1:
+            print('\t ERROR!!! You have entered too few arguments!')
+        elif message_int == -2:
+            print('\t ERROR!!! Incorrect format of the entered string!')
+        elif message_int == -3:
+            print('\t ERROR!!! The service does not support currency conversion at the rate from the future!' + \
+                '\n\t\tPlease check the spelling of the date!')
+        elif message_int == -4:
+            print('\t ERROR!!! You can only translate integer or float values or you entered the wrong date format!')
+        else:
+            print('\t ERROR!!! No Error detected!')
+        return
+
+    def currency_dict_update(self, client, date_string):
+        self.Currency_dict = lit_ev(self.replace_None(client.get(date_string)).decode('utf-8'))
+        if not self.Currency_dict:
+            self.currency_dict_fill(date_string)
+            client.set(date_string, str(self.Currency_dict), expire = self.TIME_CACHE)
+        return
+
     def main(self):
         flag = True
         client = self.CLIENT
         while flag:
-            print('\n Please, inter the a line with the name of two currencies in the format:' + \
-                '\n\t "[Date] Numbers CurrencyFrom -> CurrencyTo"')
+            self.print_message(0)
             input_string = input(' > ')
             print('')
             result_parser = self.string_parser(input_string)
-            if   result_parser == -1:
-                print('\t ERROR!!! You have entered too few arguments!')
-            elif result_parser == -2:
-                print('\t ERROR!!! Incorrect format of the entered string!')
-            elif result_parser == -3:
-                print('\t ERROR!!! The service does not support currency conversion at the rate from the future!' + \
-                      '\n\t\tPlease check the spelling of the date!')
-            elif result_parser == -4:
-                print('\t ERROR!!! You can only translate integer or float values or you entered the wrong date format!')
+            if result_parser in [-1, -2, -3, -4]:
+                self.print_message(result_parser)
             else:
                 date_string = result_parser[0]
-                self.Currency_dict = lit_ev(self.replace_None(client.get(date_string)).decode('utf-8'))
-                if not self.Currency_dict:
-                    self.currency_dict_fill(date_string)
-                    client.set(date_string, str(self.Currency_dict), expire = self.TIME_CACHE)
+                self.currency_dict_update(client, date_string)
                 date_string = datetime.strptime(date_string, '%d/%m/%Y').date().strftime('%d.%m.%y')
                 currency_from_value = self.currency_get(result_parser[2])
-                currency_to_value = self.currency_get(result_parser[3])
+                currency_to_value   = self.currency_get(result_parser[3])
                 if (currency_from_value < 0) or (currency_to_value < 0):
-                    print('\t ERROR!!! There is no such currency in the system!' + \
-                        '\n\t\t Please make sure that you have entered the correct currency name!')
+                    self.print_message(1)
                 else:
                     result_values = self.input_array_number(result_parser[1], currency_from_value, currency_to_value)
                     currency_from_name = result_parser[2].upper()
@@ -129,4 +144,4 @@ class Currency_converter_class():
         return 0
 
 if __name__ == '__main__':
-     Currency_converter_class()
+     Currency_converter_class().main()

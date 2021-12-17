@@ -2,6 +2,9 @@
 # Cache
 __pycache__/
 
+# Git
+.git
+
 # Distribution / packaging
 .vs/
 *.pyproj
