@@ -1,5 +1,5 @@
 
-[![CI](https://github.com/ShelaevNikita/Currency_converter/actions/workflows/service_ci.yml/badge.svg?branch=main)](https://github.com/ShelaevNikita/Currency_converter/actions/workflows/service_ci.yml)
+[![CI](https://github.com/ShelaevNikita/Currency_converter/actions/workflows/service_ci.yml/badge.svg?branch=main&branch=develop)](https://github.com/ShelaevNikita/Currency_converter/actions/workflows/service_ci.yml)
 # The Currency Converter Service
 
 This is a service for converting one currency into another.   
