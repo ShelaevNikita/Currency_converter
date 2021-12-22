@@ -1,3 +1,4 @@
+
 name: CI for Converter
 
 # Controls when the workflow will run
@@ -28,6 +29,8 @@ jobs:
         # Steps represent a sequence of tasks that will be executed as part of the job
         steps:
           - uses: actions/checkout@v2
+          - uses: niden/actions-memcached@v7
+		  
           - name: Set up Python 3.7
             uses: actions/setup-python@v2
             with:
