@@ -19,17 +19,17 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 COPY requirements.txt .
-RUN pip install --user -r requirements.txt
+RUN pip install -r requirements.txt
 
 FROM python:3.7-slim AS build-
-WORKDIR /code
+WORKDIR currency_converter
 COPY --from=compile-image /opt/venv /opt/venv
 COPY currency_converter.py .
 
 # Make sure we use the virtualenv
 ENV PATH="/opt/venv/bin:$PATH"
-CMD ['python', './currency_converter.py']
+CMD ['python3', '-u', 'currency_converter.py']
 
 # Commands to run the image:
-# sudo docker build [-t <image_name>] .
-# sudo docker run -p 11211:11211 [-it <image_name>]
+# sudo docker build -t <image_name> .
+# sudo docker run -d -it -p 11211:11211 <image_name>
