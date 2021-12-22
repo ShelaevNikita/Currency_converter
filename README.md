@@ -1,4 +1,4 @@
-﻿
+
 # The Currency Converter Service
 
 This is a service for converting one currency into another.   
@@ -51,8 +51,8 @@ Please, inter the a line with the name of two currencies in the format:
 ### Running the service in a Docker-container
 
 To get a working service, you need to run the following command:
-```sudo docker build [-t <image_name>] .```   
+```sudo docker build -t <image_name> .```   
 After that, you need to run the assembled image:
-```sudo docker run -p 11211:11211 [-it <image_name>]```   
-Where ***image_name*** is the name of the assembled image (optional).   
+```sudo docker run -d -it -p 11211:11211 <image_name>```   
+Where ***image_name*** is the name of the assembled image.   
 ...Further work with the service is similar to the description above **🠕**.
