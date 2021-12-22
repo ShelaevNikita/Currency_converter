@@ -1,6 +1,9 @@
 
 # The Currency Converter Service
 
+CI for 'main' branch: [![CI for Converter](https://github.com/ShelaevNikita/Currency_converter/actions/workflows/service_ci.yml/badge.svg?branch=main)](https://github.com/ShelaevNikita/Currency_converter/actions/workflows/service_ci.yml)   
+CI for 'develop' branch: [![CI for Converter](https://github.com/ShelaevNikita/Currency_converter/actions/workflows/service_ci.yml/badge.svg?branch=develop)](https://github.com/ShelaevNikita/Currency_converter/actions/workflows/service_ci.yml)
+
 This is a service for converting one currency into another.   
 It refers for data to the website of [The Central bank of Russia](https://cbr.ru/).   
 To convert, the user must enter a string in the following format: `[Date] Numbers CurrencyFrom -> CurrencyTo`   
